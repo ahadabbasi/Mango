@@ -1,25 +1,20 @@
-var builder = WebApplication.CreateBuilder(args);
+using System.Threading.Tasks;
+using Microsoft.AspNetCore.Builder;
 
-// Add services to the container.
+namespace Mango.Service.Coupon.Web;
 
-builder.Services.AddControllers();
-// Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
-builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen();
-
-var app = builder.Build();
-
-// Configure the HTTP request pipeline.
-if (app.Environment.IsDevelopment())
+public static class Program
 {
-    app.UseSwagger();
-    app.UseSwaggerUI();
+    public static Task Main(string[] args)
+    {
+        WebApplicationBuilder builder = WebApplication.CreateBuilder(args);
+
+        Startup.ConfigureServices(builder.Services, builder.Configuration);
+
+        WebApplication app = builder.Build();
+
+        Startup.Configure(app, app.Environment);
+
+        return app.RunAsync();
+    }
 }
-
-app.UseHttpsRedirection();
-
-app.UseAuthorization();
-
-app.MapControllers();
-
-app.Run();

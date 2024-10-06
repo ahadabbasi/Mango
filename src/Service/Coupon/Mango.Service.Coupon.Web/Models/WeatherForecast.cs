@@ -1,4 +1,6 @@
-namespace Mango.Service.Coupon.Web;
+using System;
+
+namespace Mango.Service.Coupon.Web.Models;
 
 public class WeatherForecast
 {
