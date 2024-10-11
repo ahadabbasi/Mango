@@ -28,4 +28,8 @@
     <Folder Include="Models\ViewModels\" />
   </ItemGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\..\..\Common\Mango.Common.Shared\Mango.Common.Shared.csproj" />
+  </ItemGroup>
+
 </Project>
