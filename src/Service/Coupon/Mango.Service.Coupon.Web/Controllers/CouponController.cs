@@ -1,22 +1,25 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using AutoMapper;
 using Mango.Service.Coupon.Web.Models.Databases.Contexts;
+using Mango.Service.Coupon.Web.Models.ViewModels;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
 namespace Mango.Service.Coupon.Web.Controllers;
 
 [ApiController, Route("api/[controller]")]
-public class CouponController(ApplicationContext context) : ControllerBase
+public class CouponController(ApplicationContext context, IMapper mapper) : ControllerBase
 {
     [HttpGet]
     public async Task<ActionResult<IEnumerable<Models.Entities.Coupon>>> Get(CancellationToken cancellationToken)
     {
         return await context.Coupons.ToListAsync(cancellationToken);
     }
-    
+
     [HttpGet("{code:regex(^\\w*$)}")]
     public async Task<ActionResult<Models.Entities.Coupon?>> Get(string code, CancellationToken cancellationToken)
     {
@@ -24,12 +27,145 @@ public class CouponController(ApplicationContext context) : ControllerBase
             .Where(model => model.Code.ToUpper().Equals(code.ToUpper()))
             .FirstOrDefaultAsync(cancellationToken);
     }
-    
+
     [HttpGet("{id:int}")]
     public async Task<ActionResult<Models.Entities.Coupon?>> Get(int id, CancellationToken cancellationToken)
     {
         return await context.Coupons
             .Where(model => model.Id.Equals(id))
             .FirstOrDefaultAsync(cancellationToken);
+    }
+
+    [HttpPost]
+    public async Task<IActionResult> Create([FromBody] CreateVm entry, CancellationToken cancellationToken)
+    {
+        IActionResult result = BadRequest();
+
+        if (ModelState.IsValid)
+        {
+            if (!await context.Coupons.AnyAsync(model => model.Code.ToUpper().Equals(entry.Code.ToUpper()),
+                    cancellationToken))
+            {
+                Models.Entities.Coupon entity = mapper.Map<Models.Entities.Coupon>(entry);
+
+                await context.Coupons.AddAsync(entity, cancellationToken);
+
+                try
+                {
+                    await context.SaveChangesAsync(cancellationToken);
+
+                    result = Ok();
+
+                    ModelState.Clear();
+                }
+                catch (Exception)
+                {
+                    ModelState.AddModelError("UnknownException", "An unexpected error has occurred; please try again later.");
+                }
+            }
+            else
+            {
+                ModelState.AddModelError("DuplicateCouponCode", "A coupon code already exists for this code; please select a different one.");
+            }
+        }
+
+        if (ModelState.ErrorCount != 0)
+        {
+            result = BadRequest(ModelState);
+        }
+
+        return result;
+    }
+
+    [HttpPut("{id:int}")]
+    public async Task<IActionResult> Update(int id, [FromBody] CreateVm entry, CancellationToken cancellationToken)
+    {
+        IActionResult result = BadRequest();
+
+        if (ModelState.IsValid)
+        {
+            if (await context.Coupons.AnyAsync(model => model.Id == id, cancellationToken))
+            {
+                if (!await context.Coupons.AnyAsync(
+                        model => model.Id != id && model.Code.ToUpper().Equals(entry.Code.ToUpper()),
+                        cancellationToken)
+                    )
+                {
+                    Models.Entities.Coupon entity = mapper.Map<Models.Entities.Coupon>(entry);
+
+                    entity.Id = id;
+
+                    context.Coupons.Update(entity);
+
+                    try
+                    {
+                        await context.SaveChangesAsync(cancellationToken);
+
+                        result = Ok();
+
+                        ModelState.Clear();
+                    }
+
+                    catch (Exception)
+                    {
+                        ModelState.AddModelError("UnknownException", "An unexpected error has occurred; please try again later.");
+                    }
+                }
+                else
+                {
+                    ModelState.AddModelError("DuplicateCouponCode", "A coupon code already exists for this code; please select a different one.");
+                }
+            }
+
+            else
+            {
+                ModelState.AddModelError("NotExistCoupon", "No coupons are associated with this primary key. Please verify your information and try again.");
+            }
+        }
+
+        if (ModelState.ErrorCount != 0)
+        {
+            result = BadRequest(ModelState);
+        }
+
+        return result;
+    }
+
+    [HttpDelete("{id:int}")]
+    public async Task<IActionResult> Delete(int id, CancellationToken cancellationToken)
+    {
+        IActionResult result = BadRequest();
+
+        if (await context.Coupons.AnyAsync(model => model.Id == id, cancellationToken))
+        {
+            Models.Entities.Coupon entity =
+                await context.Coupons.FirstAsync(model => model.Id == id, cancellationToken);
+
+            context.Coupons.Remove(entity);
+
+            try
+            {
+                await context.SaveChangesAsync(cancellationToken);
+
+                result = Ok();
+
+                ModelState.Clear();
+            }
+            catch (Exception)
+            {
+                ModelState.AddModelError("UnknownException", "An unexpected error has occurred; please try again later.");
+            }
+        }
+        else
+        {
+            ModelState.AddModelError("NotExistCoupon", "No coupons are associated with this primary key. Please verify your information and try again.");
+        }
+
+        if (ModelState.ErrorCount != 0)
+        {
+            result = BadRequest(ModelState);
+        }
+
+        return result;
     }
 }

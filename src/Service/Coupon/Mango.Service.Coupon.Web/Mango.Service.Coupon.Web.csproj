@@ -25,7 +25,6 @@
   <ItemGroup>
     <Folder Include="Models\Configurations\" />
     <Folder Include="Models\Databases\Migrations\" />
-    <Folder Include="Models\ViewModels\" />
   </ItemGroup>
 
   <ItemGroup>
