@@ -17,11 +17,13 @@ public sealed class Result<TValue> : Result
 
     public TValue Value => IsSuccess ? _value! : throw new InvalidOperationException(string.Empty);
     
-    public static Result<T> Success<T>(T value) => new Result<T>(value);
+    public static Result<T> Success<T>(T value) => new(value);
 
-    public static Result<T> Failure<T>(Error[] errors) => new Result<T>(errors);
+    public static Result<T> Failure<T>(Error[] errors) => new(errors);
     
-    public static implicit operator Result<TValue>(TValue value) => Success<TValue>(value);
+    public static implicit operator Result<TValue>(TValue? value) => value != null ? Success<TValue>(value) : Error.NotFound;
     
-    public static implicit operator Result<TValue>(Error error) => Failure<TValue>(new[] { error });
+    public static implicit operator Result<TValue>(Error error) => new[] { error };
+    
+    public static implicit operator Result<TValue>(Error[] errors) => Failure<TValue>(errors);
 }

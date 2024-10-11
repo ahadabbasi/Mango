@@ -23,7 +23,9 @@ public class Result
     
     public static Result Failure(Error[] errors) => new Result(errors);
     
-    public static implicit operator Result(Error error) => Result.Failure(new[] { error });
+    public static implicit operator Result(Error error) => new[] { error };
+    
+    public static implicit operator Result(Error[] errors) => Failure(errors);
     
 }
 
