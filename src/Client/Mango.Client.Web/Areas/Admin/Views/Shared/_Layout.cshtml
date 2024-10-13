@@ -1,0 +1,72 @@
+﻿<!doctype html>
+<html lang="en" data-bs-theme="auto">
+
+<head>
+
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="">
+  <meta name="author" content="Mark Otto, Jacob Thornton, and Bootstrap contributors">
+  <meta name="generator" content="Hugo 0.122.0">
+  <title>@ViewData[Views.Title] Dashboard</title>
+
+  <link href="~/libraries/bootstrap/v5.3.3/css/bootstrap.min.css" rel="stylesheet">
+
+  <style>
+    
+  </style>
+
+
+  <!-- Custom styles for this template -->
+  <link href="~/libraries/bootstrap-icons/v1.11.3/font/bootstrap-icons.min.css" rel="stylesheet">
+  <!-- Custom styles for this template -->
+  <link href="~/styles/dashboard.css" rel="stylesheet">
+  
+  @await RenderSectionAsync(Views.Styles, false)
+</head>
+
+<body>
+
+  <header class="navbar sticky-top bg-dark flex-md-nowrap p-0 shadow" data-bs-theme="dark">
+    <a class="navbar-brand col-md-3 col-lg-2 me-0 px-3 fs-6 text-white" href="#">Company name</a>
+
+    <ul class="navbar-nav flex-row d-md-none">
+      <li class="nav-item text-nowrap">
+        <button class="nav-link px-3 text-white" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSearch"
+          aria-controls="navbarSearch" aria-expanded="false" aria-label="Toggle search">
+          <svg class="bi">
+            <use xlink:href="#search" />
+          </svg>
+        </button>
+      </li>
+      <li class="nav-item text-nowrap">
+        
+      </li>
+    </ul>
+
+    <div id="navbarSearch" class="navbar-search w-100 collapse">
+      <input class="form-control w-100 rounded-0 border-0" type="text" placeholder="Search" aria-label="Search">
+    </div>
+  </header>
+
+<div class="container-fluid">
+  <div class="row">
+    <div class="sidebar border border-right col-md-3 col-lg-2 p-0 bg-body-tertiary">
+      <div class="bg-body-tertiary" tabindex="-1" id="sidebarMenu"
+           aria-labelledby="sidebarMenuLabel">
+        <div class="d-md-flex flex-column p-0 pt-lg-3 overflow-y-auto">
+          @await Html.PartialAsync("_SidebarMenu")
+        </div>
+      </div>
+    </div>
+
+    <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4">
+      @RenderBody()
+    </main>
+  </div>
+</div>
+
+@await RenderSectionAsync(Views.Scripts, false)
+</body>
+
+</html>
