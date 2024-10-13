@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Text.Json;
 using Mango.Service.Coupon.Web.Models.Databases.Contexts;
 using Mango.Service.Coupon.Web.Models.Extensions;
 using Mango.Service.Coupon.Web.Models.Options;
@@ -38,7 +39,12 @@ public static class Startup
 
         services.AddAutoMapper(typeof(Startup).Assembly);
 
-        services.AddControllers();
+        services.AddControllers()
+            .AddJsonOptions(options =>
+            {
+                options.JsonSerializerOptions.PropertyNameCaseInsensitive = false;
+                options.JsonSerializerOptions.PropertyNamingPolicy = JsonNamingPolicy.CamelCase;
+            });
         // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
         services.AddEndpointsApiExplorer();
         services.AddSwaggerGen();
