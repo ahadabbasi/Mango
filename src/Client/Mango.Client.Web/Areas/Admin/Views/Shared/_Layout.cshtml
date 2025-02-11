@@ -1,5 +1,5 @@
 ﻿<!doctype html>
-<html lang="en" data-bs-theme="auto">
+<html class="min-vh-100" lang="en" data-bs-theme="auto">
 
 <head>
 
@@ -25,7 +25,7 @@
   @await RenderSectionAsync(Views.Styles, false)
 </head>
 
-<body>
+<body class="min-vh-100 d-flex flex-column">
 
   <header class="navbar sticky-top bg-dark flex-md-nowrap p-0 shadow" data-bs-theme="dark">
     <a class="navbar-brand col-md-3 col-lg-2 me-0 px-3 fs-6 text-white" href="#">Company name</a>
@@ -49,18 +49,18 @@
     </div>
   </header>
 
-<div class="container-fluid">
-  <div class="row">
-    <div class="sidebar border border-right col-md-3 col-lg-2 p-0 bg-body-tertiary">
+<div class="container-fluid flex-grow-1 d-flex">
+  <div class="row flex-grow-1 flex-nowrap overflow-x-hidden" id="main-container">
+    <div class="sidebar border border-right col-8 col-md-3 col-lg-2 p-0 bg-body-tertiary">
       <div class="bg-body-tertiary" tabindex="-1" id="sidebarMenu"
            aria-labelledby="sidebarMenuLabel">
-        <div class="d-md-flex flex-column p-0 pt-lg-3 overflow-y-auto">
+        <div class="d-md-flex flex-column p-0 overflow-y-auto">
           @await Html.PartialAsync("_SidebarMenu")
         </div>
       </div>
     </div>
 
-    <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4">
+    <main class="col-12 col-md-9 ms-sm-auto col-lg-10 px-md-4">
       @RenderBody()
     </main>
   </div>
