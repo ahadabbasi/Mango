@@ -1,0 +1,74 @@
+﻿@model Result<IEnumerable<CouponVm>>
+
+@{
+    ViewData[Views.Title] = "List of all coupon exist";
+}
+
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-12">
+            <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+                <h1 class="h2">Coupons</h1>
+                <div class="btn-toolbar mb-2 mb-md-0">
+                    <div class="btn-group me-2">
+                        <a href="@Url.RouteUrl(Routes.DashboardCouponCreate)" type="button" class="btn btn-sm btn-outline-secondary">Add new</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-12">
+            @if (Model.IsSuccess)
+            {
+                <table class="table">
+                    <thead>
+                    <tr>
+                        <th scope="col">#</th>
+                        <th scope="col">Code</th>
+                        <th scope="col">DiscountAmount</th>
+                        <th scope="col">MinimumAmount</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    @foreach (CouponVm item in Model.Value)
+                    {
+                        <tr>
+                            <th scope="row">@item.Id</th>
+                            <td>@item.Code</td>
+                            <td>@item.DiscountAmount</td>
+                            <td>@item.MinimumAmount</td>
+                        </tr>
+                    }
+                    </tbody>
+                </table>
+            }
+            else
+            {
+                <div class="alert alert-danger" role="alert">
+                    <ol class="list-group list-group-numbered">
+                        @if (Model.Errors != null)
+                        {
+                            foreach (Error error in Model.Errors)
+                            {
+                                <li class="list-group-item d-flex justify-content-between align-items-start">
+                                    <div class="ms-2 me-auto">
+                                        <div class="fw-bold">@error.Code</div>
+                                        @error.Description
+                                    </div>
+                                </li>
+                            }
+                        }
+                        else
+                        {
+                            <li class="list-group-item d-flex justify-content-between align-items-start">
+                                <div class="ms-2 me-auto">
+                                    <div class="fw-bold">@Error.Unexpected.Code</div>
+                                    @Error.Unexpected.Description
+                                </div>
+                            </li>
+                        }
+                    </ol>
+                </div>
+            }
+        </div>
+    </div>
+</div>
