@@ -236,9 +236,7 @@
 }
 
 .btn-toggle-nav a {
-    padding: .1875rem .5rem;
-    margin-top: .125rem;
-    margin-left: 1.25rem;
+    padding: 0.3125rem 0.5rem 0.1875rem 1.75rem;
 }
 .btn-toggle-nav a:hover,
 .btn-toggle-nav a:focus {
@@ -247,4 +245,14 @@
 
 .scrollarea {
     overflow-y: auto;
+}
+
+@media (max-width: 768px){
+    #main-container {
+        transform: translateX(-66.66666667%);
+        transition: transform 0.5s ease;
+    }
+    #main-container{
+        transform: translateX(0);
+    }
 }
