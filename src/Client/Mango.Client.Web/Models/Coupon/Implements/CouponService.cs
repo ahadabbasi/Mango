@@ -1,15 +1,20 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Net.Http;
+using System.Net.Http.Headers;
 using System.Threading;
 using System.Threading.Tasks;
+using Mango.Client.Web.Models.Commons.DataTransfers;
 using Mango.Client.Web.Models.Coupon.Contracts;
+using Mango.Client.Web.Models.Coupon.Options;
 using Mango.Client.Web.Models.Coupon.ViewModels;
 using Mango.Common.Shared.Result;
+using Microsoft.Extensions.Options;
 
 namespace Mango.Client.Web.Models.Coupon.Implements;
 
-public sealed class CouponService(ICouponClient client) : ICouponService
+public sealed class CouponService(ICouponClient client, IOptions<CouponConfiguration> options) : ICouponService
 {
     public async Task<Result<IEnumerable<CouponVm>>> AllAsync(CancellationToken cancellationToken = default)
     {
@@ -19,10 +24,8 @@ public sealed class CouponService(ICouponClient client) : ICouponService
         {
             using (HttpClient httpClient = await client.ClientAsync(cancellationToken))
             {
-                using (HttpRequestMessage request = new HttpRequestMessage())
+                using (HttpRequestMessage request = new HttpRequestMessage(HttpMethod.Get, options.Value.EndPoint))
                 {
-                    request.Method = HttpMethod.Get;
-
                     using (HttpResponseMessage response = await httpClient.SendAsync(request, cancellationToken))
                     {
                         if (response.IsSuccessStatusCode)
@@ -45,6 +48,7 @@ public sealed class CouponService(ICouponClient client) : ICouponService
         }
         catch (Exception e)
         {
+            Console.WriteLine(e);
             result = Error.ServerNotResponse;
         }
 
@@ -53,12 +57,12 @@ public sealed class CouponService(ICouponClient client) : ICouponService
 
     public Task<Result<CouponVm>> GetByIdAsync(int id, CancellationToken cancellationToken = default)
     {
-        throw new System.NotImplementedException();
+        throw new NotImplementedException();
     }
 
     public Task<Result<CouponVm>> GetByCodeAsync(string code, CancellationToken cancellationToken = default)
     {
-        throw new System.NotImplementedException();
+        throw new NotImplementedException();
     }
 
     public Task<Result> CreateAsync(CreateCouponVm entry, CancellationToken cancellationToken = default)
@@ -68,11 +72,11 @@ public sealed class CouponService(ICouponClient client) : ICouponService
 
     public Task<Result> UpdateAsync(int id, CreateCouponVm entry, CancellationToken cancellationToken = default)
     {
-        throw new System.NotImplementedException();
+        throw new NotImplementedException();
     }
 
     public Task<Result> DeleteAsync(int id, CancellationToken cancellationToken = default)
     {
-        throw new System.NotImplementedException();
+        throw new NotImplementedException();
     }
 }
