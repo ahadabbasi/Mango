@@ -12,7 +12,10 @@ using Microsoft.EntityFrameworkCore;
 namespace Mango.Service.Coupon.Web.Controllers;
 
 [ApiController, Route("api/[controller]")]
-public class CouponController(ApplicationContext context, IMapper mapper) : ControllerBase
+public class CouponController(
+    ApplicationContext context, 
+    IMapper mapper
+) : ControllerBase
 {
     [HttpGet]
     public async Task<ActionResult<IEnumerable<Models.Entities.Coupon>>> Get(CancellationToken cancellationToken)
@@ -39,7 +42,7 @@ public class CouponController(ApplicationContext context, IMapper mapper) : Cont
     [HttpPost]
     public async Task<IActionResult> Create([FromBody] CreateVm entry, CancellationToken cancellationToken)
     {
-        IActionResult result = BadRequest();
+        IActionResult result = BadRequest(ModelState);
 
         if (ModelState.IsValid)
         {
@@ -69,18 +72,13 @@ public class CouponController(ApplicationContext context, IMapper mapper) : Cont
             }
         }
 
-        if (ModelState.ErrorCount != 0)
-        {
-            result = BadRequest(ModelState);
-        }
-
         return result;
     }
 
     [HttpPut("{id:int}")]
     public async Task<IActionResult> Update(int id, [FromBody] CreateVm entry, CancellationToken cancellationToken)
     {
-        IActionResult result = BadRequest();
+        IActionResult result = BadRequest(ModelState);
 
         if (ModelState.IsValid)
         {
@@ -123,18 +121,13 @@ public class CouponController(ApplicationContext context, IMapper mapper) : Cont
             }
         }
 
-        if (ModelState.ErrorCount != 0)
-        {
-            result = BadRequest(ModelState);
-        }
-
         return result;
     }
 
     [HttpDelete("{id:int}")]
     public async Task<IActionResult> Delete(int id, CancellationToken cancellationToken)
     {
-        IActionResult result = BadRequest();
+        IActionResult result = BadRequest(ModelState);
 
         if (await context.Coupons.AnyAsync(model => model.Id == id, cancellationToken))
         {
@@ -159,11 +152,6 @@ public class CouponController(ApplicationContext context, IMapper mapper) : Cont
         else
         {
             ModelState.AddModelError("NotExistCoupon", "No coupons are associated with this primary key. Please verify your information and try again.");
-        }
-
-        if (ModelState.ErrorCount != 0)
-        {
-            result = BadRequest(ModelState);
         }
 
         return result;
