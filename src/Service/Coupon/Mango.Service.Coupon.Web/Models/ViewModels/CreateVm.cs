@@ -1,3 +1,17 @@
-﻿namespace Mango.Service.Coupon.Web.Models.ViewModels;
+﻿using System.ComponentModel.DataAnnotations;
 
-public record CreateVm(string Code, decimal DiscountAmount, decimal? MinimumAmount);
+namespace Mango.Service.Coupon.Web.Models.ViewModels;
+
+public record CreateVm(
+    [Required]
+    string Code, 
+    [
+        Required,
+        Range(0, 100)
+    ]
+    decimal DiscountAmount,
+    [
+        Range(0, int.MaxValue)
+    ]
+    decimal? MinimumAmount
+);
