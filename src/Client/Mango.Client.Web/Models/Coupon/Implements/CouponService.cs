@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Net.Http;
 using System.Net.Http.Headers;
+using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using Mango.Client.Web.Models.Commons.DataTransfers;
@@ -65,9 +66,64 @@ public sealed class CouponService(ICouponClient client, IOptions<CouponConfigura
         throw new NotImplementedException();
     }
 
-    public Task<Result> CreateAsync(CreateCouponVm entry, CancellationToken cancellationToken = default)
+    public async Task<Result> CreateAsync(CreateCouponVm entry, CancellationToken cancellationToken = default)
     {
-        throw new System.NotImplementedException();
+        Result result = Error.None;
+
+        try
+        {
+            using (HttpClient httpClient = await client.ClientAsync(cancellationToken))
+            {
+                using (HttpRequestMessage request = new HttpRequestMessage(HttpMethod.Post, options.Value.EndPoint))
+                {
+                    using (
+                        StringContent content = 
+                        new StringContent(
+                           System.Text.Json.JsonSerializer.Serialize(entry, await client.JsonSerializerOptionsAsync(cancellationToken)),
+                           Encoding.UTF8,
+                           new MediaTypeHeaderValue(System.Net.Mime.MediaTypeNames.Application.Json)
+                        )
+                    )
+                    {
+                        request.Content = content;
+                        using (HttpResponseMessage response = await httpClient.SendAsync(request, cancellationToken))
+                        {
+                            if (response.IsSuccessStatusCode)
+                            {
+                                result = Result.Success();
+                            }
+                            else
+                            {
+                                BadRequestResponse? badRequestResponse =
+                                    await System.Text.Json.JsonSerializer.DeserializeAsync<BadRequestResponse>(
+                                        await response.Content.ReadAsStreamAsync(cancellationToken),
+                                        await client.JsonSerializerOptionsAsync(cancellationToken),
+                                        cancellationToken
+                                    );
+
+                                if (badRequestResponse != null)
+                                {
+                                    result = Result.Failure(
+                                        badRequestResponse.Errors.SelectMany(
+                                            item => item.Value.Select(
+                                                (message, index) => new Error(Code:$"{item.Key}-{index}", Description: message)
+                                            )
+                                        ).ToArray()
+                                    );
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        catch (Exception e)
+        {
+            Console.WriteLine(e);
+            result = Error.ServerNotResponse;
+        }
+
+        return result;
     }
 
     public Task<Result> UpdateAsync(int id, CreateCouponVm entry, CancellationToken cancellationToken = default)

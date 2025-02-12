@@ -10,12 +10,46 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace Mango.Client.Web.Areas.Admin.Controllers;
 
-[Area(AreaName.Admin), Route("[area]/[controller]")]
+[Area(AreaName.Admin), Route(template: "[area]/[controller]")]
 public sealed class CouponController(ICouponService service) : Controller
 {
-    [HttpGet("[action]", Name = Routes.DashboardCouponList)]
+    [HttpGet(template: "[action]", Name = Routes.DashboardCouponList)]
     public async Task<IActionResult> List(CancellationToken cancellationToken)
     {
         return View(await service.AllAsync(cancellationToken));
+    }
+
+    [HttpGet(template: "[action]", Name = Routes.DashboardCouponCreate)]
+    public Task<IActionResult> Create(CancellationToken cancellationToken)
+    {
+        return Task.FromResult<IActionResult>(View());
+    }
+    
+    [
+        HttpPost(template: "[action]", Name = Routes.DashboardCouponCreate),
+        ValidateAntiForgeryToken
+    ]
+    public async Task<IActionResult> Create([Bind] CreateCouponVm entry, CancellationToken cancellationToken)
+    {
+        IActionResult result = View(entry);
+        
+        if (ModelState.IsValid)
+        {
+            Result resultOfService = await service.CreateAsync(entry, cancellationToken);
+
+            if (resultOfService.IsSuccess)
+            {
+                result = RedirectToRoute(Routes.DashboardCouponList);
+            }
+            
+            ModelState.Clear();
+
+            foreach (Error error in resultOfService.Errors ?? Array.Empty<Error>())
+            {
+                ModelState.TryAddModelError(error.Code, error.Description ?? string.Empty);
+            }
+        }
+
+        return result;
     }
 }

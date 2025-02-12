@@ -25,26 +25,7 @@ public static class Startup
             configuration.GetSection(CouponConfiguration.ApplicationSettingSectionName)
         );
         
-        /*
-        services.AddHttpClient<ICouponClient, CouponClient>()
-            .ConfigurePrimaryHttpMessageHandler((handler, provider) =>
-            {
-                IWebHostEnvironment? environment = provider.GetService<IWebHostEnvironment>();
-
-                if (environment != null)
-                {
-                    if (environment.IsDevelopment())
-                    {
-                        handler = new HttpClientHandler()
-                        {
-                            ServerCertificateCustomValidationCallback =
-                                HttpClientHandler.DangerousAcceptAnyServerCertificateValidator
-                        };
-                    }
-                }
-            });
-        */
-
+        
         services.AddScoped<EnvironmentHttpClientHandler>();
 
         services.AddHttpClient<ICouponClient, CouponClient>()
