@@ -1,0 +1,32 @@
+@{
+    Layout = "../Shared/_Layout";
+}
+
+<div class="container-fluid">
+    <div class="row">
+        @if (Html.HeaderTitleHasBeenSet() || Html.BackRouteHasBeenSet())
+        {
+            <div class="col-12">
+                <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+                    @if (Html.HeaderTitleHasBeenSet())
+                    {
+                        <h1 class="h2">@Html.GetHeaderTitle()</h1>
+                    }
+                    @if (Html.BackRouteHasBeenSet())
+                    {
+                        <div class="btn-toolbar mb-2 mb-md-0">
+                            <div class="btn-group me-2">
+                                <a href="@Url.RouteUrl(Html.GetBackRoute())" type="button" class="btn btn-sm btn-outline-secondary">
+                                    @(Html.BackRouteTitleHasBeenSet() ? Html.GetBackRouteTitle() : "Go back")
+                                </a>
+                            </div>
+                        </div>
+                    }
+                </div>
+            </div>
+        }
+        <div class="col-12">
+            @RenderBody()
+        </div>
+    </div>
+</div>

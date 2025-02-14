@@ -1,114 +1,80 @@
-@using System.Linq.Expressions
 @model CreateCouponVm
 
 @{
-    ViewData[Views.Title] = "Create new coupon";
+    string title = "Create new coupon";
+    
+    ViewData[Views.Title] = title;
 
-    string InputCssClasses<TValue>(Expression<Func<CreateCouponVm, TValue>> expression)
-    {
-        IList<string> classes = new List<string>()
-        {
-            "form-control"
-        };
+    Layout = "_Layout";
 
-        if (!ViewData.ModelState.IsValid)
-        {
-            if (expression.Body is MemberExpression memberExpression)
-            {
-                string propertyName = memberExpression.Member.Name;
-                
-                if (ViewData.ModelState.Keys.Contains(propertyName))
-                {
-                    //ViewData.ModelState.Keys.Contains()
-                    classes.Add("is-invalid");
-                }
-            }
-            
-        }
-        
-        return string.Join((char)32, classes);
-    }
+    Html.SetHeaderTitle(title);
+
+    Html.SetBackRoute(Routes.DashboardCouponList);
 }
 
-<div class="container-fluid">
-    <div class="row">
-        <div class="col-12">
-            <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
-                <h1 class="h2">Create new coupon</h1>
-                <div class="btn-toolbar mb-2 mb-md-0">
-                    <div class="btn-group me-2">
-                        <a href="@Url.RouteUrl(Routes.DashboardCouponList)" type="button" class="btn btn-sm btn-outline-secondary">Go back to list</a>
-                    </div>
-                </div>
+@using (
+    Html.BeginRouteForm(
+        routeName: Routes.DashboardCouponCreate,
+        method: FormMethod.Post,
+        htmlAttributes: new { @class = "row g-3 needs-validation" }
+    )
+)
+{
+    @Html.AntiForgeryToken()
+
+    <div class="col-12 col-lg-4">
+        @Html.LabelFor(
+            expression: model => model.Code,
+            htmlAttributes: new { @class = "form-label" }
+        )
+        @Html.TextBoxFor(
+            expression: model => model.Code,
+            htmlAttributes: new { @class = Html.BootstrapInputCssClasses(model => model.Code) }
+        )
+        @Html.ValidationMessageFor(
+            expression: model => model.Code,
+            message: string.Empty,
+            htmlAttributes: new { @class = "invalid-feedback" }
+        )
+    </div>
+
+    <div class="col-12 col-lg-4">
+        @Html.LabelFor(
+            expression: model => model.DiscountAmount,
+            htmlAttributes: new { @class = "form-label" }
+        )
+        @Html.TextBoxFor(
+            expression: model => model.DiscountAmount,
+            htmlAttributes: new { @class = Html.BootstrapInputCssClasses(model => model.DiscountAmount) }
+        )
+        @Html.ValidationMessageFor(
+            expression: model => model.DiscountAmount,
+            message: string.Empty,
+            htmlAttributes: new { @class = "invalid-feedback" }
+        )
+    </div>
+
+    <div class="col-12 col-lg-4">
+        @Html.LabelFor(
+            expression: model => model.MinimumAmount,
+            htmlAttributes: new { @class = "form-label" }
+        )
+        @Html.TextBoxFor(
+            expression: model => model.MinimumAmount,
+            htmlAttributes: new { @class = Html.BootstrapInputCssClasses(model => model.MinimumAmount) }
+        )
+        @Html.ValidationMessageFor(
+            expression: model => model.MinimumAmount,
+            message: string.Empty,
+            htmlAttributes: new { @class = "invalid-feedback" }
+        )
+    </div>
+
+    <div class="col-12">
+        <div class="row align-content-center justify-content-center">
+            <div class="col-12 col-lg-6 d-grid">
+                <button class="btn btn-primary" type="submit">Create</button>
             </div>
         </div>
-        <div class="col-12">
-            @using(
-                Html.BeginRouteForm(
-                    routeName: Routes.DashboardCouponCreate,
-                    method: FormMethod.Post,
-                    htmlAttributes: new { @class = "row g-3 needs-validation" }
-                )
-            )
-            {
-                @Html.AntiForgeryToken()
-                
-                <div class="col-12 col-lg-4">
-                    @Html.LabelFor(
-                        expression: model => model.Code,
-                        htmlAttributes: new { @class = "form-label" }
-                    )
-                    @Html.TextBoxFor(
-                        expression: model => model.Code,
-                        htmlAttributes: new { @class = InputCssClasses(model => model.Code) }
-                    )
-                    @Html.ValidationMessageFor(
-                        expression: model => model.Code,
-                        message: string.Empty,
-                        htmlAttributes: new { @class = "invalid-feedback" }
-                    )
-                </div>
-                
-                <div class="col-12 col-lg-4">
-                    @Html.LabelFor(
-                        expression: model => model.DiscountAmount,
-                        htmlAttributes: new { @class = "form-label" }
-                    )
-                    @Html.TextBoxFor(
-                        expression: model => model.DiscountAmount,
-                        htmlAttributes: new { @class = InputCssClasses(model => model.DiscountAmount) }
-                    )
-                    @Html.ValidationMessageFor(
-                        expression: model => model.DiscountAmount,
-                        message: string.Empty,
-                        htmlAttributes: new { @class = "invalid-feedback" }
-                    )
-                </div>
-                
-                <div class="col-12 col-lg-4">
-                    @Html.LabelFor(
-                        expression: model => model.MinimumAmount,
-                        htmlAttributes: new { @class = "form-label" }
-                    )
-                    @Html.TextBoxFor(
-                        expression: model => model.MinimumAmount,
-                        htmlAttributes: new { @class = InputCssClasses(model => model.MinimumAmount) }
-                    )
-                    @Html.ValidationMessageFor(
-                        expression: model => model.MinimumAmount,
-                        message: string.Empty,
-                        htmlAttributes: new { @class = "invalid-feedback" }
-                    )
-                </div>
-                
-                <div class="col-12">
-                    <div class="row align-content-center justify-content-center">
-                        <div class="col-12 col-lg-6 d-grid">
-                            <button class="btn btn-primary" type="submit">Create</button>
-                        </div>
-                    </div>
-                </div>
-            }
-        </div>
     </div>
-</div>
+}

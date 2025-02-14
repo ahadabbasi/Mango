@@ -10,4 +10,10 @@ public sealed class Views
     public const string Styles = nameof(Styles);
     
     public const string Scripts = nameof(Scripts);
+    
+    public const string HeaderTitle = nameof(HeaderTitle);
+    
+    public const string BackRouteName = nameof(BackRouteName);
+    
+    public const string BackRouteTitle = nameof(BackRouteTitle);
 }
