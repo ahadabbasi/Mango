@@ -31,16 +31,16 @@ public sealed class CouponService(ICouponClient client, IOptions<CouponConfigura
                     {
                         if (response.IsSuccessStatusCode)
                         {
-                            IEnumerable<CouponVm>? enumerable =
+                            IEnumerable<CouponVm>? entities =
                                 await System.Text.Json.JsonSerializer.DeserializeAsync<IEnumerable<CouponVm>>(
                                     await response.Content.ReadAsStreamAsync(cancellationToken),
                                     await client.JsonSerializerOptionsAsync(cancellationToken),
                                     cancellationToken
                                 );
 
-                            if (enumerable != null)
+                            if (entities != null)
                             {
-                                result = Result<IEnumerable<CouponVm>>.Success(enumerable);
+                                result = Result<IEnumerable<CouponVm>>.Success(entities);
                             }
                         }
                     }
@@ -56,9 +56,43 @@ public sealed class CouponService(ICouponClient client, IOptions<CouponConfigura
         return result;
     }
 
-    public Task<Result<CouponVm>> GetByIdAsync(int id, CancellationToken cancellationToken = default)
+    public async Task<Result<CouponVm>> GetByIdAsync(int id, CancellationToken cancellationToken = default)
     {
-        throw new NotImplementedException();
+        Result<CouponVm> result = Error.None;
+
+        try
+        {
+            using (HttpClient httpClient = await client.ClientAsync(cancellationToken))
+            {
+                using (HttpRequestMessage request = new HttpRequestMessage(HttpMethod.Get, requestUri: $"{options.Value.EndPoint}/{id}"))
+                {
+                    using (HttpResponseMessage response = await httpClient.SendAsync(request, cancellationToken))
+                    {
+                        if (response.IsSuccessStatusCode)
+                        {
+                            CouponVm? entity =
+                                await System.Text.Json.JsonSerializer.DeserializeAsync<CouponVm>(
+                                    await response.Content.ReadAsStreamAsync(cancellationToken),
+                                    await client.JsonSerializerOptionsAsync(cancellationToken),
+                                    cancellationToken
+                                );
+
+                            if (entity != null)
+                            {
+                                result = Result<CouponVm>.Success(entity);
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        catch (Exception e)
+        {
+            Console.WriteLine(e);
+            result = Error.ServerNotResponse;
+        }
+
+        return result;
     }
 
     public Task<Result<CouponVm>> GetByCodeAsync(string code, CancellationToken cancellationToken = default)
