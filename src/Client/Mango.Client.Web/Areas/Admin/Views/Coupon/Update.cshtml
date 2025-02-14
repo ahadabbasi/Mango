@@ -1,0 +1,83 @@
+@model CouponVm
+
+@{
+    string title = $"Update coupon code of `{Model.Code}`";
+    
+    ViewData[Views.Title] = title;
+
+    Layout = "_Layout";
+    
+    Html.SetHeaderTitle(title);
+    
+    Html.SetBackRoute(Routes.DashboardCouponList);
+    
+    Html.SetBackRouteTitle("Back to list");
+}
+
+
+@using (
+    Html.BeginRouteForm(
+        routeName: Routes.DashboardCouponCreate,
+        method: FormMethod.Post,
+        htmlAttributes: new { @class = "row g-3 needs-validation" }
+    )
+)
+{
+    @Html.AntiForgeryToken()
+
+    <div class="col-12 col-lg-4">
+        @Html.LabelFor(
+            expression: model => model.Code,
+            htmlAttributes: new { @class = "form-label" }
+        )
+        @Html.TextBoxFor(
+            expression: model => model.Code,
+            htmlAttributes: new { @class = Html.BootstrapInputCssClasses(model => model.Code) }
+        )
+        @Html.ValidationMessageFor(
+            expression: model => model.Code,
+            message: string.Empty,
+            htmlAttributes: new { @class = "invalid-feedback" }
+        )
+    </div>
+
+    <div class="col-12 col-lg-4">
+        @Html.LabelFor(
+            expression: model => model.DiscountAmount,
+            htmlAttributes: new { @class = "form-label" }
+        )
+        @Html.TextBoxFor(
+            expression: model => model.DiscountAmount,
+            htmlAttributes: new { @class = Html.BootstrapInputCssClasses(model => model.DiscountAmount) }
+        )
+        @Html.ValidationMessageFor(
+            expression: model => model.DiscountAmount,
+            message: string.Empty,
+            htmlAttributes: new { @class = "invalid-feedback" }
+        )
+    </div>
+
+    <div class="col-12 col-lg-4">
+        @Html.LabelFor(
+            expression: model => model.MinimumAmount,
+            htmlAttributes: new { @class = "form-label" }
+        )
+        @Html.TextBoxFor(
+            expression: model => model.MinimumAmount,
+            htmlAttributes: new { @class = Html.BootstrapInputCssClasses(model => model.MinimumAmount) }
+        )
+        @Html.ValidationMessageFor(
+            expression: model => model.MinimumAmount,
+            message: string.Empty,
+            htmlAttributes: new { @class = "invalid-feedback" }
+        )
+    </div>
+
+    <div class="col-12">
+        <div class="row align-content-center justify-content-center">
+            <div class="col-12 col-lg-6 d-grid">
+                <button class="btn btn-primary" type="submit">Create</button>
+            </div>
+        </div>
+    </div>
+}

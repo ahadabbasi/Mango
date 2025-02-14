@@ -52,4 +52,22 @@ public sealed class CouponController(ICouponService service) : Controller
 
         return result;
     }
+    
+    [HttpGet(template: "[action]/{id:int}", Name = Routes.DashboardCouponUpdate)]
+    public async Task<IActionResult> Update([FromRoute]int? id, CancellationToken cancellationToken)
+    {
+        IActionResult result = RedirectToRoute(Routes.DashboardCouponList);
+
+        if (id != null)
+        {
+            Result<CouponVm> resultOfService = await service.GetByIdAsync((int)id, cancellationToken);
+
+            if (resultOfService.IsSuccess)
+            {
+                result = View(resultOfService.Value);
+            }
+        }
+        
+        return result;
+    }
 }
