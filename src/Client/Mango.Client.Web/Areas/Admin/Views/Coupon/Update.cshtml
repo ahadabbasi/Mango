@@ -17,14 +17,14 @@
 
 @using (
     Html.BeginRouteForm(
-        routeName: Routes.DashboardCouponCreate,
+        routeName: Routes.DashboardCouponUpdate,
+        routeValues: new { id = Model.Id },
         method: FormMethod.Post,
+        antiforgery: true,
         htmlAttributes: new { @class = "row g-3 needs-validation" }
     )
 )
 {
-    @Html.AntiForgeryToken()
-
     <div class="col-12 col-lg-4">
         @Html.LabelFor(
             expression: model => model.Code,
@@ -76,7 +76,7 @@
     <div class="col-12">
         <div class="row align-content-center justify-content-center">
             <div class="col-12 col-lg-6 d-grid">
-                <button class="btn btn-primary" type="submit">Create</button>
+                <button class="btn btn-primary" type="submit">Update</button>
             </div>
         </div>
     </div>

@@ -70,4 +70,32 @@ public sealed class CouponController(ICouponService service) : Controller
         
         return result;
     }
+    
+    [
+        HttpPost(template: "[action]/{id:int}", Name = Routes.DashboardCouponUpdate),
+        ValidateAntiForgeryToken
+    ]
+    public async Task<IActionResult> Update([FromRoute]int id, [Bind]CouponVm entry, CancellationToken cancellationToken)
+    {
+        IActionResult result = View(entry);
+
+        if (ModelState.IsValid)
+        {
+            Result resultOfService = await service.UpdateAsync(id, entry, cancellationToken);
+
+            if (resultOfService.IsSuccess)
+            {
+                result = RedirectToRoute(Routes.DashboardCouponList);
+            }
+            
+            ModelState.Clear();
+
+            foreach (Error error in resultOfService.Errors ?? Array.Empty<Error>())
+            {
+                ModelState.TryAddModelError(error.Code, error.Description ?? string.Empty);
+            }
+        }
+        
+        return result;
+    }
 }

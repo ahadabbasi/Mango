@@ -3,7 +3,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Net.Http;
 using System.Net.Http.Headers;
+using System.Net.Mime;
 using System.Text;
+using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
 using Mango.Client.Web.Models.Commons.DataTransfers;
@@ -32,7 +34,7 @@ public sealed class CouponService(ICouponClient client, IOptions<CouponConfigura
                         if (response.IsSuccessStatusCode)
                         {
                             IEnumerable<CouponVm>? entities =
-                                await System.Text.Json.JsonSerializer.DeserializeAsync<IEnumerable<CouponVm>>(
+                                await JsonSerializer.DeserializeAsync<IEnumerable<CouponVm>>(
                                     await response.Content.ReadAsStreamAsync(cancellationToken),
                                     await client.JsonSerializerOptionsAsync(cancellationToken),
                                     cancellationToken
@@ -71,7 +73,7 @@ public sealed class CouponService(ICouponClient client, IOptions<CouponConfigura
                         if (response.IsSuccessStatusCode)
                         {
                             CouponVm? entity =
-                                await System.Text.Json.JsonSerializer.DeserializeAsync<CouponVm>(
+                                await JsonSerializer.DeserializeAsync<CouponVm>(
                                     await response.Content.ReadAsStreamAsync(cancellationToken),
                                     await client.JsonSerializerOptionsAsync(cancellationToken),
                                     cancellationToken
@@ -113,9 +115,9 @@ public sealed class CouponService(ICouponClient client, IOptions<CouponConfigura
                     using (
                         StringContent content = 
                         new StringContent(
-                           System.Text.Json.JsonSerializer.Serialize(entry, await client.JsonSerializerOptionsAsync(cancellationToken)),
+                           JsonSerializer.Serialize(entry, await client.JsonSerializerOptionsAsync(cancellationToken)),
                            Encoding.UTF8,
-                           new MediaTypeHeaderValue(System.Net.Mime.MediaTypeNames.Application.Json)
+                           new MediaTypeHeaderValue(MediaTypeNames.Application.Json)
                         )
                     )
                     {
@@ -129,7 +131,7 @@ public sealed class CouponService(ICouponClient client, IOptions<CouponConfigura
                             else
                             {
                                 BadRequestResponse? badRequestResponse =
-                                    await System.Text.Json.JsonSerializer.DeserializeAsync<BadRequestResponse>(
+                                    await JsonSerializer.DeserializeAsync<BadRequestResponse>(
                                         await response.Content.ReadAsStreamAsync(cancellationToken),
                                         await client.JsonSerializerOptionsAsync(cancellationToken),
                                         cancellationToken
@@ -160,9 +162,64 @@ public sealed class CouponService(ICouponClient client, IOptions<CouponConfigura
         return result;
     }
 
-    public Task<Result> UpdateAsync(int id, CreateCouponVm entry, CancellationToken cancellationToken = default)
+    public async Task<Result> UpdateAsync(int id, CreateCouponVm entry, CancellationToken cancellationToken = default)
     {
-        throw new NotImplementedException();
+        Result result = Error.None;
+
+        try
+        {
+            using (HttpClient httpClient = await client.ClientAsync(cancellationToken))
+            {
+                using (HttpRequestMessage request = new HttpRequestMessage(HttpMethod.Put, requestUri: $"{options.Value.EndPoint}/{id}"))
+                {
+                    using (
+                        StringContent content = 
+                        new StringContent(
+                           JsonSerializer.Serialize(entry, await client.JsonSerializerOptionsAsync(cancellationToken)),
+                           Encoding.UTF8,
+                           new MediaTypeHeaderValue(MediaTypeNames.Application.Json)
+                        )
+                    )
+                    {
+                        request.Content = content;
+                        using (HttpResponseMessage response = await httpClient.SendAsync(request, cancellationToken))
+                        {
+                            if (response.IsSuccessStatusCode)
+                            {
+                                result = Result.Success();
+                            }
+                            else
+                            {
+                                BadRequestResponse? badRequestResponse =
+                                    await JsonSerializer.DeserializeAsync<BadRequestResponse>(
+                                        await response.Content.ReadAsStreamAsync(cancellationToken),
+                                        await client.JsonSerializerOptionsAsync(cancellationToken),
+                                        cancellationToken
+                                    );
+
+                                if (badRequestResponse != null)
+                                {
+                                    result = Result.Failure(
+                                        badRequestResponse.Errors.SelectMany(
+                                            item => item.Value.Select(
+                                                (message, index) => new Error(Code:$"{item.Key}-{index}", Description: message)
+                                            )
+                                        ).ToArray()
+                                    );
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        catch (Exception e)
+        {
+            Console.WriteLine(e);
+            result = Error.ServerNotResponse;
+        }
+
+        return result;
     }
 
     public Task<Result> DeleteAsync(int id, CancellationToken cancellationToken = default)
