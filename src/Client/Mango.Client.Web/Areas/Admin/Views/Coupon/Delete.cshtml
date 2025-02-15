@@ -1,0 +1,82 @@
+@model CouponVm
+
+@{
+    string title = $"Delete coupon code of `{Model.Code}`";
+    
+    ViewData[Views.Title] = title;
+
+    Layout = "_Layout";
+    
+    Html.SetHeaderTitle(title);
+    
+    Html.SetBackRoute(Routes.DashboardCouponList);
+    
+    Html.SetBackRouteTitle("Back to list");
+}
+
+@using (
+    Html.BeginRouteForm(
+        routeName: Routes.DashboardCouponDelete,
+        routeValues: new { id = Model.Id },
+        method: FormMethod.Post,
+        antiforgery: true,
+        htmlAttributes: new { @class = "row g-3 needs-validation" }
+    )
+)
+{
+    <div class="col-12 col-lg-4">
+        @Html.LabelFor(
+            expression: model => model.Code,
+            htmlAttributes: new { @class = "form-label" }
+        )
+        @Html.TextBoxFor(
+            expression: model => model.Code,
+            htmlAttributes: new { @class = Html.BootstrapInputCssClasses(model => model.Code), @readonly = true }
+        )
+        @Html.ValidationMessageFor(
+            expression: model => model.Code,
+            message: string.Empty,
+            htmlAttributes: new { @class = "invalid-feedback" }
+        )
+    </div>
+
+    <div class="col-12 col-lg-4">
+        @Html.LabelFor(
+            expression: model => model.DiscountAmount,
+            htmlAttributes: new { @class = "form-label" }
+        )
+        @Html.TextBoxFor(
+            expression: model => model.DiscountAmount,
+            htmlAttributes: new { @class = Html.BootstrapInputCssClasses(model => model.DiscountAmount), @readonly = true }
+        )
+        @Html.ValidationMessageFor(
+            expression: model => model.DiscountAmount,
+            message: string.Empty,
+            htmlAttributes: new { @class = "invalid-feedback" }
+        )
+    </div>
+
+    <div class="col-12 col-lg-4">
+        @Html.LabelFor(
+            expression: model => model.MinimumAmount,
+            htmlAttributes: new { @class = "form-label" }
+        )
+        @Html.TextBoxFor(
+            expression: model => model.MinimumAmount,
+            htmlAttributes: new { @class = Html.BootstrapInputCssClasses(model => model.MinimumAmount), @readonly = true }
+        )
+        @Html.ValidationMessageFor(
+            expression: model => model.MinimumAmount,
+            message: string.Empty,
+            htmlAttributes: new { @class = "invalid-feedback" }
+        )
+    </div>
+
+    <div class="col-12">
+        <div class="row align-content-center justify-content-center">
+            <div class="col-12 col-lg-6 d-grid">
+                <button class="btn btn-danger" type="submit">Delete</button>
+            </div>
+        </div>
+    </div>
+}

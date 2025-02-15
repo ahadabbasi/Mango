@@ -66,7 +66,8 @@ public sealed class CouponService(ICouponClient client, IOptions<CouponConfigura
         {
             using (HttpClient httpClient = await client.ClientAsync(cancellationToken))
             {
-                using (HttpRequestMessage request = new HttpRequestMessage(HttpMethod.Get, requestUri: $"{options.Value.EndPoint}/{id}"))
+                using (HttpRequestMessage request =
+                       new HttpRequestMessage(HttpMethod.Get, requestUri: $"{options.Value.EndPoint}/{id}"))
                 {
                     using (HttpResponseMessage response = await httpClient.SendAsync(request, cancellationToken))
                     {
@@ -113,11 +114,11 @@ public sealed class CouponService(ICouponClient client, IOptions<CouponConfigura
                 using (HttpRequestMessage request = new HttpRequestMessage(HttpMethod.Post, options.Value.EndPoint))
                 {
                     using (
-                        StringContent content = 
+                        StringContent content =
                         new StringContent(
-                           JsonSerializer.Serialize(entry, await client.JsonSerializerOptionsAsync(cancellationToken)),
-                           Encoding.UTF8,
-                           new MediaTypeHeaderValue(MediaTypeNames.Application.Json)
+                            JsonSerializer.Serialize(entry, await client.JsonSerializerOptionsAsync(cancellationToken)),
+                            Encoding.UTF8,
+                            new MediaTypeHeaderValue(MediaTypeNames.Application.Json)
                         )
                     )
                     {
@@ -142,7 +143,8 @@ public sealed class CouponService(ICouponClient client, IOptions<CouponConfigura
                                     result = Result.Failure(
                                         badRequestResponse.Errors.SelectMany(
                                             item => item.Value.Select(
-                                                (message, index) => new Error(Code:$"{item.Key}-{index}", Description: message)
+                                                (message, index) => new Error(Code: $"{item.Key}-{index}",
+                                                    Description: message)
                                             )
                                         ).ToArray()
                                     );
@@ -170,14 +172,15 @@ public sealed class CouponService(ICouponClient client, IOptions<CouponConfigura
         {
             using (HttpClient httpClient = await client.ClientAsync(cancellationToken))
             {
-                using (HttpRequestMessage request = new HttpRequestMessage(HttpMethod.Put, requestUri: $"{options.Value.EndPoint}/{id}"))
+                using (HttpRequestMessage request =
+                       new HttpRequestMessage(HttpMethod.Put, requestUri: $"{options.Value.EndPoint}/{id}"))
                 {
                     using (
-                        StringContent content = 
+                        StringContent content =
                         new StringContent(
-                           JsonSerializer.Serialize(entry, await client.JsonSerializerOptionsAsync(cancellationToken)),
-                           Encoding.UTF8,
-                           new MediaTypeHeaderValue(MediaTypeNames.Application.Json)
+                            JsonSerializer.Serialize(entry, await client.JsonSerializerOptionsAsync(cancellationToken)),
+                            Encoding.UTF8,
+                            new MediaTypeHeaderValue(MediaTypeNames.Application.Json)
                         )
                     )
                     {
@@ -202,7 +205,8 @@ public sealed class CouponService(ICouponClient client, IOptions<CouponConfigura
                                     result = Result.Failure(
                                         badRequestResponse.Errors.SelectMany(
                                             item => item.Value.Select(
-                                                (message, index) => new Error(Code:$"{item.Key}-{index}", Description: message)
+                                                (message, index) => new Error(Code: $"{item.Key}-{index}",
+                                                    Description: message)
                                             )
                                         ).ToArray()
                                     );
@@ -222,8 +226,54 @@ public sealed class CouponService(ICouponClient client, IOptions<CouponConfigura
         return result;
     }
 
-    public Task<Result> DeleteAsync(int id, CancellationToken cancellationToken = default)
+    public async Task<Result> DeleteAsync(int id, CancellationToken cancellationToken = default)
     {
-        throw new NotImplementedException();
+        Result result = Error.None;
+
+        try
+        {
+            using (HttpClient httpClient = await client.ClientAsync(cancellationToken))
+            {
+                using (HttpRequestMessage request =
+                       new HttpRequestMessage(HttpMethod.Delete, requestUri: $"{options.Value.EndPoint}/{id}"))
+                {
+                    using (HttpResponseMessage response = await httpClient.SendAsync(request, cancellationToken))
+                    {
+                        if (response.IsSuccessStatusCode)
+                        {
+                            result = Result.Success();
+                        }
+                        else
+                        {
+                            BadRequestResponse? badRequestResponse =
+                                await JsonSerializer.DeserializeAsync<BadRequestResponse>(
+                                    await response.Content.ReadAsStreamAsync(cancellationToken),
+                                    await client.JsonSerializerOptionsAsync(cancellationToken),
+                                    cancellationToken
+                                );
+
+                            if (badRequestResponse != null)
+                            {
+                                result = Result.Failure(
+                                    badRequestResponse.Errors.SelectMany(
+                                        item => item.Value.Select(
+                                            (message, index) =>
+                                                new Error(Code: $"{item.Key}-{index}", Description: message)
+                                        )
+                                    ).ToArray()
+                                );
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        catch (Exception e)
+        {
+            Console.WriteLine(e);
+            result = Error.ServerNotResponse;
+        }
+
+        return result;
     }
 }

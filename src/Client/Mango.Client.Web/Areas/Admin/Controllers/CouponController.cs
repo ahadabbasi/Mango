@@ -98,4 +98,50 @@ public sealed class CouponController(ICouponService service) : Controller
         
         return result;
     }
+    
+    [HttpGet(template: "[action]/{id:int}", Name = Routes.DashboardCouponDelete)]
+    public async Task<IActionResult> Delete([FromRoute]int? id, CancellationToken cancellationToken)
+    {
+        IActionResult result = RedirectToRoute(Routes.DashboardCouponList);
+
+        if (id != null)
+        {
+            Result<CouponVm> resultOfService = await service.GetByIdAsync((int)id, cancellationToken);
+
+            if (resultOfService.IsSuccess)
+            {
+                result = View(resultOfService.Value);
+            }
+        }
+        
+        return result;
+    }
+    
+    [
+        HttpPost(template: "[action]/{id:int}", Name = Routes.DashboardCouponDelete),
+        ValidateAntiForgeryToken
+    ]
+    public async Task<IActionResult> Delete([FromRoute]int id, [Bind]CouponVm entry, CancellationToken cancellationToken)
+    {
+        IActionResult result = View(entry);
+
+        if (ModelState.IsValid)
+        {
+            Result resultOfService = await service.DeleteAsync(id, cancellationToken);
+
+            if (resultOfService.IsSuccess)
+            {
+                result = RedirectToRoute(Routes.DashboardCouponList);
+            }
+            
+            ModelState.Clear();
+
+            foreach (Error error in resultOfService.Errors ?? Array.Empty<Error>())
+            {
+                ModelState.TryAddModelError(error.Code, error.Description ?? string.Empty);
+            }
+        }
+        
+        return result;
+    }
 }

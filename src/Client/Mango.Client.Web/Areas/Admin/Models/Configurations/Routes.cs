@@ -7,4 +7,6 @@ public abstract class Routes
     public const string DashboardCouponCreate = nameof(DashboardCouponCreate);
     
     public const string DashboardCouponUpdate = nameof(DashboardCouponUpdate);
+    
+    public const string DashboardCouponDelete = nameof(DashboardCouponDelete);
 }
