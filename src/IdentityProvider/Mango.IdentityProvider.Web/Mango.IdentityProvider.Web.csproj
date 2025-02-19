@@ -16,4 +16,8 @@
     <Folder Include="Areas\Account\Views\" />
   </ItemGroup>
 
+  <ItemGroup>
+    <AdditionalFiles Include="Areas\Account\Views\Login\Index.cshtml" />
+  </ItemGroup>
+
 </Project>

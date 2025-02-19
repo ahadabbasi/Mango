@@ -6,7 +6,7 @@ using Microsoft.Extensions.Hosting;
 
 namespace Mango.IdentityProvider.Web;
 
-public class Startup
+public static class Startup
 {
     public static void ConfigureServices(IServiceCollection services, IConfiguration configuration)
     {
@@ -38,9 +38,15 @@ public class Startup
         app.UseRouting();
 
         app.UseAuthorization();
-
+        
+        app.MapControllerRoute(
+            name : "areas",
+            pattern : "{area:exists}/{controller=Home}/{action=Index}/{id?}"
+        );
+        
         app.MapControllerRoute(
             name: "default",
-            pattern: "{controller=Home}/{action=Index}/{id?}");
+            pattern: "{controller=Home}/{action=Index}/{id?}"
+        );
     }
 }
