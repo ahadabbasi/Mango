@@ -1,16 +1,19 @@
-﻿using System;
+﻿using Mango.Client.Web.Models.Coupon.Contracts;
+using Mango.Client.Web.Models.Coupon.Options;
+using Microsoft.Extensions.Options;
+using System;
 using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
-using Mango.Client.Web.Models.Coupon.Contracts;
-using Mango.Client.Web.Models.Coupon.Options;
-using Microsoft.Extensions.Options;
 
 namespace Mango.Client.Web.Models.Coupon.Implements;
 
-public sealed class CouponClient(HttpClient client, IOptions<CouponConfiguration> options) : ICouponClient
+public sealed class CouponClient(
+    HttpClient client, 
+    IOptions<CouponConfiguration> options
+) : ICouponClient
 {
     public Task<HttpClient> ClientAsync(CancellationToken cancellationToken = default)
     {

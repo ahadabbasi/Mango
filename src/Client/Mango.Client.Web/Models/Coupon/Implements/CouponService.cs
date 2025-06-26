@@ -1,4 +1,10 @@
-﻿using System;
+﻿using Mango.Client.Web.Models.Commons.DataTransfers;
+using Mango.Client.Web.Models.Coupon.Contracts;
+using Mango.Client.Web.Models.Coupon.Options;
+using Mango.Client.Web.Models.Coupon.ViewModels;
+using Mango.Common.Shared.Result;
+using Microsoft.Extensions.Options;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net.Http;
@@ -8,16 +14,13 @@ using System.Text;
 using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
-using Mango.Client.Web.Models.Commons.DataTransfers;
-using Mango.Client.Web.Models.Coupon.Contracts;
-using Mango.Client.Web.Models.Coupon.Options;
-using Mango.Client.Web.Models.Coupon.ViewModels;
-using Mango.Common.Shared.Result;
-using Microsoft.Extensions.Options;
 
 namespace Mango.Client.Web.Models.Coupon.Implements;
 
-public sealed class CouponService(ICouponClient client, IOptions<CouponConfiguration> options) : ICouponService
+public sealed class CouponService(
+    ICouponClient client,
+    IOptions<CouponConfiguration> options
+) : ICouponService
 {
     public async Task<Result<IEnumerable<CouponVm>>> AllAsync(CancellationToken cancellationToken = default)
     {
@@ -27,9 +30,19 @@ public sealed class CouponService(ICouponClient client, IOptions<CouponConfigura
         {
             using (HttpClient httpClient = await client.ClientAsync(cancellationToken))
             {
-                using (HttpRequestMessage request = new HttpRequestMessage(HttpMethod.Get, options.Value.EndPoint))
+                using (HttpRequestMessage request = 
+                    new(
+                        HttpMethod.Get,
+                        options.Value.EndPoint
+                    )
+                )
                 {
-                    using (HttpResponseMessage response = await httpClient.SendAsync(request, cancellationToken))
+                    using (HttpResponseMessage response = 
+                        await httpClient.SendAsync(
+                            request,
+                            cancellationToken
+                        )
+                    )
                     {
                         if (response.IsSuccessStatusCode)
                         {
@@ -67,9 +80,18 @@ public sealed class CouponService(ICouponClient client, IOptions<CouponConfigura
             using (HttpClient httpClient = await client.ClientAsync(cancellationToken))
             {
                 using (HttpRequestMessage request =
-                       new HttpRequestMessage(HttpMethod.Get, requestUri: $"{options.Value.EndPoint}/{id}"))
+                    new(
+                        HttpMethod.Get,
+                        requestUri: $"{options.Value.EndPoint}/{id}"
+                    )
+                )
                 {
-                    using (HttpResponseMessage response = await httpClient.SendAsync(request, cancellationToken))
+                    using (HttpResponseMessage response = 
+                        await httpClient.SendAsync(
+                            request, 
+                            cancellationToken
+                        )
+                    )
                     {
                         if (response.IsSuccessStatusCode)
                         {
@@ -111,26 +133,40 @@ public sealed class CouponService(ICouponClient client, IOptions<CouponConfigura
         {
             using (HttpClient httpClient = await client.ClientAsync(cancellationToken))
             {
-                using (HttpRequestMessage request = new HttpRequestMessage(HttpMethod.Post, options.Value.EndPoint))
+                using (HttpRequestMessage request = 
+                    new(
+                        HttpMethod.Post,
+                        options.Value.EndPoint
+                    )
+                )
                 {
                     using (
                         StringContent content =
-                        new StringContent(
-                            JsonSerializer.Serialize(entry, await client.JsonSerializerOptionsAsync(cancellationToken)),
+                        new(
+                            JsonSerializer.Serialize(
+                                entry, 
+                                await client.JsonSerializerOptionsAsync(cancellationToken)
+                            ),
                             Encoding.UTF8,
                             new MediaTypeHeaderValue(MediaTypeNames.Application.Json)
                         )
                     )
                     {
                         request.Content = content;
-                        using (HttpResponseMessage response = await httpClient.SendAsync(request, cancellationToken))
+
+                        using (HttpResponseMessage response =
+                            await httpClient.SendAsync(
+                                request, 
+                                cancellationToken
+                            )
+                        )
                         {
-                            if (response.IsSuccessStatusCode)
+                            result = Result.Success();
+
+                            if (!response.IsSuccessStatusCode)
                             {
-                                result = Result.Success();
-                            }
-                            else
-                            {
+                                result = Error.None;
+
                                 BadRequestResponse? badRequestResponse =
                                     await JsonSerializer.DeserializeAsync<BadRequestResponse>(
                                         await response.Content.ReadAsStreamAsync(cancellationToken),
@@ -173,26 +209,39 @@ public sealed class CouponService(ICouponClient client, IOptions<CouponConfigura
             using (HttpClient httpClient = await client.ClientAsync(cancellationToken))
             {
                 using (HttpRequestMessage request =
-                       new HttpRequestMessage(HttpMethod.Put, requestUri: $"{options.Value.EndPoint}/{id}"))
+                    new(
+                        HttpMethod.Put,
+                        requestUri: $"{options.Value.EndPoint}/{id}"
+                    )
+                )
                 {
                     using (
                         StringContent content =
-                        new StringContent(
-                            JsonSerializer.Serialize(entry, await client.JsonSerializerOptionsAsync(cancellationToken)),
+                        new(
+                            JsonSerializer.Serialize(
+                                entry, 
+                                await client.JsonSerializerOptionsAsync(cancellationToken)
+                            ),
                             Encoding.UTF8,
                             new MediaTypeHeaderValue(MediaTypeNames.Application.Json)
                         )
                     )
                     {
                         request.Content = content;
-                        using (HttpResponseMessage response = await httpClient.SendAsync(request, cancellationToken))
+
+                        using (HttpResponseMessage response =
+                            await httpClient.SendAsync(
+                                request, 
+                                cancellationToken
+                            )
+                        )
                         {
-                            if (response.IsSuccessStatusCode)
+                            result = Result.Success();
+
+                            if (!response.IsSuccessStatusCode)
                             {
-                                result = Result.Success();
-                            }
-                            else
-                            {
+                                result = Error.None;
+
                                 BadRequestResponse? badRequestResponse =
                                     await JsonSerializer.DeserializeAsync<BadRequestResponse>(
                                         await response.Content.ReadAsStreamAsync(cancellationToken),
@@ -235,16 +284,17 @@ public sealed class CouponService(ICouponClient client, IOptions<CouponConfigura
             using (HttpClient httpClient = await client.ClientAsync(cancellationToken))
             {
                 using (HttpRequestMessage request =
-                       new HttpRequestMessage(HttpMethod.Delete, requestUri: $"{options.Value.EndPoint}/{id}"))
+                    new(HttpMethod.Delete, requestUri: $"{options.Value.EndPoint}/{id}")
+                )
                 {
                     using (HttpResponseMessage response = await httpClient.SendAsync(request, cancellationToken))
                     {
-                        if (response.IsSuccessStatusCode)
+                        result = Result.Success();
+
+                        if (!response.IsSuccessStatusCode)
                         {
-                            result = Result.Success();
-                        }
-                        else
-                        {
+                            result = Error.None;
+
                             BadRequestResponse? badRequestResponse =
                                 await JsonSerializer.DeserializeAsync<BadRequestResponse>(
                                     await response.Content.ReadAsStreamAsync(cancellationToken),
