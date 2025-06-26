@@ -9,12 +9,12 @@
 
     Html.SetHeaderTitle(title);
 
-    Html.SetBackRoute(Routes.DashboardCouponList);
+    Html.SetBackRoute(IRoutes.DashboardCouponList);
 }
 
 @using (
     Html.BeginRouteForm(
-        routeName: Routes.DashboardCouponCreate,
+        routeName: IRoutes.DashboardCouponCreate,
         method: FormMethod.Post,
         htmlAttributes: new { @class = "row g-3 needs-validation" }
     )

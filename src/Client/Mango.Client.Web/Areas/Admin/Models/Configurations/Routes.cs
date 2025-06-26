@@ -1,6 +1,6 @@
 ﻿namespace Mango.Client.Web.Areas.Admin.Models.Configurations;
 
-public abstract class Routes
+public interface IRoutes
 {
     public const string DashboardCouponList = nameof(DashboardCouponList);
     

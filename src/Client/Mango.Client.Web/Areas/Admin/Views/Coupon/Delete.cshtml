@@ -9,14 +9,14 @@
     
     Html.SetHeaderTitle(title);
     
-    Html.SetBackRoute(Routes.DashboardCouponList);
+    Html.SetBackRoute(IRoutes.DashboardCouponList);
     
     Html.SetBackRouteTitle("Back to list");
 }
 
 @using (
     Html.BeginRouteForm(
-        routeName: Routes.DashboardCouponDelete,
+        routeName: IRoutes.DashboardCouponDelete,
         routeValues: new { id = Model.Id },
         method: FormMethod.Post,
         antiforgery: true,

@@ -7,7 +7,7 @@
 
     Html.SetHeaderTitle("Coupons");
 
-    Html.SetBackRoute(Routes.DashboardCouponCreate);
+    Html.SetBackRoute(IRoutes.DashboardCouponCreate);
 
     Html.SetBackRouteTitle("Add new");
 }
@@ -39,12 +39,12 @@
                         </button>
                         <ul class="dropdown-menu">
                             <li>
-                                <a class="dropdown-item" href="@Url.RouteUrl(routeName: Routes.DashboardCouponUpdate, values: new { id = item.Id } )">
+                                <a class="dropdown-item" href="@Url.RouteUrl(routeName: IRoutes.DashboardCouponUpdate, values: new { id = item.Id } )">
                                     Update
                                 </a>
                             </li>
                             <li>
-                                <a class="dropdown-item" href="@Url.RouteUrl(routeName: Routes.DashboardCouponDelete, values: new { id = item.Id } )">
+                                <a class="dropdown-item" href="@Url.RouteUrl(routeName: IRoutes.DashboardCouponDelete, values: new { id = item.Id } )">
                                     Delete
                                 </a>
                             </li>

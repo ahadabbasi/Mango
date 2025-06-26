@@ -1,32 +1,32 @@
-﻿using System;
-using System.Threading;
-using System.Threading.Tasks;
-using Mango.Client.Web.Areas.Admin.Models.Configurations;
+﻿using Mango.Client.Web.Areas.Admin.Models.Configurations;
 using Mango.Client.Web.Models.Configurations;
 using Mango.Client.Web.Models.Coupon.Contracts;
 using Mango.Client.Web.Models.Coupon.ViewModels;
 using Mango.Common.Shared.Result;
 using Microsoft.AspNetCore.Mvc;
+using System;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace Mango.Client.Web.Areas.Admin.Controllers;
 
 [Area(AreaName.Admin), Route(template: "[area]/[controller]")]
 public sealed class CouponController(ICouponService service) : Controller
 {
-    [HttpGet(template: "[action]", Name = Routes.DashboardCouponList)]
+    [HttpGet(template: "[action]", Name = IRoutes.DashboardCouponList)]
     public async Task<IActionResult> List(CancellationToken cancellationToken)
     {
         return View(await service.AllAsync(cancellationToken));
     }
 
-    [HttpGet(template: "[action]", Name = Routes.DashboardCouponCreate)]
+    [HttpGet(template: "[action]", Name = IRoutes.DashboardCouponCreate)]
     public Task<IActionResult> Create(CancellationToken cancellationToken)
     {
         return Task.FromResult<IActionResult>(View());
     }
     
     [
-        HttpPost(template: "[action]", Name = Routes.DashboardCouponCreate),
+        HttpPost(template: "[action]", Name = IRoutes.DashboardCouponCreate),
         ValidateAntiForgeryToken
     ]
     public async Task<IActionResult> Create([Bind] CreateCouponVm entry, CancellationToken cancellationToken)
@@ -39,7 +39,7 @@ public sealed class CouponController(ICouponService service) : Controller
 
             if (resultOfService.IsSuccess)
             {
-                result = RedirectToRoute(Routes.DashboardCouponList);
+                result = RedirectToRoute(IRoutes.DashboardCouponList);
             }
             
             ModelState.Clear();
@@ -53,10 +53,10 @@ public sealed class CouponController(ICouponService service) : Controller
         return result;
     }
     
-    [HttpGet(template: "[action]/{id:int}", Name = Routes.DashboardCouponUpdate)]
+    [HttpGet(template: "[action]/{id:int}", Name = IRoutes.DashboardCouponUpdate)]
     public async Task<IActionResult> Update([FromRoute]int? id, CancellationToken cancellationToken)
     {
-        IActionResult result = RedirectToRoute(Routes.DashboardCouponList);
+        IActionResult result = RedirectToRoute(IRoutes.DashboardCouponList);
 
         if (id != null)
         {
@@ -72,7 +72,7 @@ public sealed class CouponController(ICouponService service) : Controller
     }
     
     [
-        HttpPost(template: "[action]/{id:int}", Name = Routes.DashboardCouponUpdate),
+        HttpPost(template: "[action]/{id:int}", Name = IRoutes.DashboardCouponUpdate),
         ValidateAntiForgeryToken
     ]
     public async Task<IActionResult> Update([FromRoute]int id, [Bind]CouponVm entry, CancellationToken cancellationToken)
@@ -85,7 +85,7 @@ public sealed class CouponController(ICouponService service) : Controller
 
             if (resultOfService.IsSuccess)
             {
-                result = RedirectToRoute(Routes.DashboardCouponList);
+                result = RedirectToRoute(IRoutes.DashboardCouponList);
             }
             
             ModelState.Clear();
@@ -99,10 +99,10 @@ public sealed class CouponController(ICouponService service) : Controller
         return result;
     }
     
-    [HttpGet(template: "[action]/{id:int}", Name = Routes.DashboardCouponDelete)]
+    [HttpGet(template: "[action]/{id:int}", Name = IRoutes.DashboardCouponDelete)]
     public async Task<IActionResult> Delete([FromRoute]int? id, CancellationToken cancellationToken)
     {
-        IActionResult result = RedirectToRoute(Routes.DashboardCouponList);
+        IActionResult result = RedirectToRoute(IRoutes.DashboardCouponList);
 
         if (id != null)
         {
@@ -118,7 +118,7 @@ public sealed class CouponController(ICouponService service) : Controller
     }
     
     [
-        HttpPost(template: "[action]/{id:int}", Name = Routes.DashboardCouponDelete),
+        HttpPost(template: "[action]/{id:int}", Name = IRoutes.DashboardCouponDelete),
         ValidateAntiForgeryToken
     ]
     public async Task<IActionResult> Delete([FromRoute]int id, [Bind]CouponVm entry, CancellationToken cancellationToken)
@@ -131,7 +131,7 @@ public sealed class CouponController(ICouponService service) : Controller
 
             if (resultOfService.IsSuccess)
             {
-                result = RedirectToRoute(Routes.DashboardCouponList);
+                result = RedirectToRoute(IRoutes.DashboardCouponList);
             }
             
             ModelState.Clear();
