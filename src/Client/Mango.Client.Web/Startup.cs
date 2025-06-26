@@ -1,5 +1,4 @@
-﻿using System.Net.Http;
-using Mango.Client.Web.Models.Commons.Handlers;
+﻿using Mango.Client.Web.Models.Commons.Handlers;
 using Mango.Client.Web.Models.Coupon.Contracts;
 using Mango.Client.Web.Models.Coupon.Implements;
 using Mango.Client.Web.Models.Coupon.Options;

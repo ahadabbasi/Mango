@@ -1,7 +1,7 @@
-﻿using System.Diagnostics;
+﻿using Mango.Client.Web.Models;
 using Microsoft.AspNetCore.Mvc;
-using Mango.Client.Web.Models;
 using Microsoft.Extensions.Logging;
+using System.Diagnostics;
 
 namespace Mango.Client.Web.Controllers;
 
