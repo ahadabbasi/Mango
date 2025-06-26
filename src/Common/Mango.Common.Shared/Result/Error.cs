@@ -2,13 +2,17 @@
 
 public record Error(string Code, string? Description = null)
 {
-    public static readonly Error None = new Error(string.Empty);
-    
-    public static readonly Error NotFound = new Error(string.Empty);
-    
-    public static readonly Error ServerNotResponse = new Error(string.Empty);
-    
-    public static readonly Error Unexpected = new Error(string.Empty);
-    
-    public static implicit operator Error(string code) => new Error(code);
+    public static readonly Error None = new(string.Empty);
+
+    public static readonly Error NotFound = new(string.Empty);
+
+    public static readonly Error ServerNotResponse = new(string.Empty);
+
+    public static readonly Error Unexpected = 
+        new(
+            "UnknownException", 
+            "An unexpected error has occurred; please try again later."
+        );
+
+    public static implicit operator Error(string code) => new(code);
 }
